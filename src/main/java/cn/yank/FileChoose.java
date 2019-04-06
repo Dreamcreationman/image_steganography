@@ -12,6 +12,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.Font;
+import java.awt.Color;
 
 
 public class FileChoose extends JFrame{
@@ -21,29 +23,42 @@ public class FileChoose extends JFrame{
 			//C:\\Users\\john\\Desktop\\original_5MV1_7216000155f2118f.jpg";
 	JFrame jf=new JFrame("LSB Steganography");
 	Container container=jf.getContentPane();
-	JLabel showpic=new JLabel("Picture Preview",JLabel.CENTER);
-	JLabel pswtip=new JLabel("Input data to write");
-	JLabel pathtip=new JLabel("Current file path");
-	JButton headerRedundancyButton=new JButton("Header redundancy");
-	JButton tailAppendButton=new JButton("Tail append");
-	JButton dataCoverageButton=new JButton("Data area coverage");
+	JLabel showpic=new JLabel("Image Previewer",JLabel.CENTER);
+	JLabel readTipsText=new JLabel("Data read from image:");
+	JLabel pathtip=new JLabel("Image Previewer");
+	JButton headerRedundancyButton=new JButton("Header Redundancy Writer");
+	JButton tailAppendButton=new JButton("Tail Append Writer");
+	JButton dataCoverageButton=new JButton("Data Coverage Writer");
 	JButton choose=new JButton("Choose Image");
-	JButton undo=new JButton("read");
-	JTextField text=new JTextField();
+	JButton headerRedundancyReaderButton=new JButton("Header Redundancy Reader");
+	JTextField readText=new JTextField();
+	private JTextField wirteText;
+	private final JLabel lblWarningThe = new JLabel("WARNING : The path of image should not contains CHINESE CHARACTERS !!!");
 	public static void main(String[] args) {
+		
 		new FileChoose();
 	}
 	public FileChoose()
 	{
 		super();
+		jf.setLocationRelativeTo(null);
 		container.add(showpic);
 		container.add(headerRedundancyButton);
+		tailAppendButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		container.add(tailAppendButton);
 		container.add(dataCoverageButton);
 		container.add(choose);
-		container.add(text);
-		container.add(undo);
-		container.add(pswtip);
+		readText.setColumns(30);
+		readText.setHorizontalAlignment(SwingConstants.LEFT);
+		container.add(readText);
+		container.add(headerRedundancyReaderButton);
+		readTipsText.setHorizontalAlignment(SwingConstants.CENTER);
+		container.add(readTipsText);
+		pathtip.setFont(new Font("SimSun", Font.BOLD, 29));
+		pathtip.setHorizontalAlignment(SwingConstants.CENTER);
 		container.add(pathtip);
 		container.setLayout(null);
 		try {
@@ -55,20 +70,43 @@ public class FileChoose extends JFrame{
 		jf.setVisible(true);
 		jf.setSize(1000, 628);
 		jf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		headerRedundancyButton.setBounds(400, 320,200,30);
-		tailAppendButton.setBounds(400, 360,200,30);
-		dataCoverageButton.setBounds(400, 400,200,30);
-		undo.setBounds(400, 450, 200, 30);
-		choose.setBounds(400, 280,200,30);
-		pathtip.setBounds(200, 60, 200, 30);
-		text.setBounds(150, 320, 230, 120);
+		headerRedundancyButton.setBounds(501, 194,200,30);
+		tailAppendButton.setBounds(501, 264,200,30);
+		dataCoverageButton.setBounds(501, 334,200,30);
+		headerRedundancyReaderButton.setBounds(736, 194, 200, 30);
+		choose.setBounds(180, 73,114,30);
+		pathtip.setBounds(106, 20, 262, 45);
+		readText.setBounds(674, 405, 262, 138);
 		showpic.setIcon(new ImageIcon("res/default.jpg"));
 		showpic.setHorizontalTextPosition(JLabel.CENTER);
 		showpic.setVerticalTextPosition(JLabel.BOTTOM);
-		pswtip.setBounds(20, 400, 120,30);
+		readTipsText.setBounds(507, 458, 157,30);
 		
-		jf.add(showpic);
-		showpic.setBounds(100, 0, 400,400);
+		jf.getContentPane().add(showpic);
+		showpic.setBounds(37, 143, 400,400);
+		
+		JButton tailAppendReaderButton = new JButton("Tail Append Reader");
+		tailAppendReaderButton.setBounds(736, 264, 200, 30);
+		jf.getContentPane().add(tailAppendReaderButton);
+		
+		JButton btnDataCoverageReader = new JButton("Data Coverage Reader");
+		btnDataCoverageReader.setBounds(736, 334, 200, 30);
+		jf.getContentPane().add(btnDataCoverageReader);
+		
+		JLabel writeTipsText = new JLabel("Data write into image:");
+		writeTipsText.setHorizontalAlignment(SwingConstants.CENTER);
+		writeTipsText.setBounds(507, 73, 157, 30);
+		jf.getContentPane().add(writeTipsText);
+		
+		wirteText = new JTextField();
+		wirteText.setColumns(30);
+		wirteText.setBounds(674, 20, 262, 138);
+		jf.getContentPane().add(wirteText);
+		lblWarningThe.setForeground(Color.RED);
+		lblWarningThe.setHorizontalAlignment(SwingConstants.CENTER);
+		lblWarningThe.setBounds(21, 113, 432, 15);
+		
+		jf.getContentPane().add(lblWarningThe);
 		JMenuBar menuBar=new JMenuBar();
 		JMenu filemenu=new JMenu("File");
 		jf.setJMenuBar(menuBar);
@@ -78,7 +116,8 @@ public class FileChoose extends JFrame{
 		filemenu.add(open);
 		filemenu.add(exit);
 		
-		repaint();
+		JOptionPane.showMessageDialog(getContentPane(), "If the interface is not complete, try to resize it or send feedback to me at yank.tenyond@gmail.com");
+
 		exit.addActionListener(new ActionListener()
 
 		{
@@ -94,7 +133,7 @@ public class FileChoose extends JFrame{
 			{
 				jiami first = new jiami();
 				first.setname(path,  "a.bmp");
-				str=text.getText()+"$";
+				str=readText.getText()+"$";
 				try {
 					first.write(str);
 					JOptionPane.showMessageDialog(getContentPane(), "Image steganography sucess, save target file in target_img folder");
@@ -126,7 +165,7 @@ public class FileChoose extends JFrame{
 				}
 			}
 		});
-		undo.addMouseListener(new MouseAdapter()
+		headerRedundancyReaderButton.addMouseListener(new MouseAdapter()
 		{
 			public void mouseClicked (MouseEvent arg0)//throws Throwable
 			{
@@ -146,5 +185,4 @@ public class FileChoose extends JFrame{
 			}
 			});
 		}
-
 }
