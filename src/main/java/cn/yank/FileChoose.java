@@ -24,16 +24,16 @@ public class FileChoose extends JFrame{
 	JFrame jf=new JFrame("LSB Steganography");
 	Container container=jf.getContentPane();
 	JLabel showpic=new JLabel("Image Previewer",JLabel.CENTER);
-	JLabel readTipsText=new JLabel("Data read from image:");
+	JLabel readTipsText=new JLabel("Path of output file: ");
 	JLabel pathtip=new JLabel("Image Previewer");
 	JButton headerRedundancyButton=new JButton("Header Redundancy Writer");
 	JButton tailAppendButton=new JButton("Tail Append Writer");
 	JButton dataCoverageButton=new JButton("Data Coverage Writer");
 	JButton choose=new JButton("Choose Image");
 	JButton headerRedundancyReaderButton=new JButton("Header Redundancy Reader");
-	JTextField readText=new JTextField();
-	private JTextField wirteText;
 	private final JLabel lblWarningThe = new JLabel("WARNING : The path of image should not contains CHINESE CHARACTERS !!!");
+	private JTextField inputPath;
+	private JTextField outputPath;
 	public static void main(String[] args) {
 		
 		new FileChoose();
@@ -51,9 +51,6 @@ public class FileChoose extends JFrame{
 		container.add(tailAppendButton);
 		container.add(dataCoverageButton);
 		container.add(choose);
-		readText.setColumns(30);
-		readText.setHorizontalAlignment(SwingConstants.LEFT);
-		container.add(readText);
 		container.add(headerRedundancyReaderButton);
 		readTipsText.setHorizontalAlignment(SwingConstants.CENTER);
 		container.add(readTipsText);
@@ -76,11 +73,10 @@ public class FileChoose extends JFrame{
 		headerRedundancyReaderButton.setBounds(736, 194, 200, 30);
 		choose.setBounds(180, 73,114,30);
 		pathtip.setBounds(106, 20, 262, 45);
-		readText.setBounds(674, 405, 262, 138);
 		showpic.setIcon(new ImageIcon("res/default.jpg"));
 		showpic.setHorizontalTextPosition(JLabel.CENTER);
 		showpic.setVerticalTextPosition(JLabel.BOTTOM);
-		readTipsText.setBounds(507, 458, 157,30);
+		readTipsText.setBounds(501, 397, 157,30);
 		
 		jf.getContentPane().add(showpic);
 		showpic.setBounds(37, 143, 400,400);
@@ -93,20 +89,59 @@ public class FileChoose extends JFrame{
 		btnDataCoverageReader.setBounds(736, 334, 200, 30);
 		jf.getContentPane().add(btnDataCoverageReader);
 		
-		JLabel writeTipsText = new JLabel("Data write into image:");
+		JLabel writeTipsText = new JLabel("Path of Input file: ");
 		writeTipsText.setHorizontalAlignment(SwingConstants.CENTER);
-		writeTipsText.setBounds(507, 73, 157, 30);
+		writeTipsText.setBounds(501, 32, 157, 30);
 		jf.getContentPane().add(writeTipsText);
-		
-		wirteText = new JTextField();
-		wirteText.setColumns(30);
-		wirteText.setBounds(674, 20, 262, 138);
-		jf.getContentPane().add(wirteText);
 		lblWarningThe.setForeground(Color.RED);
 		lblWarningThe.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWarningThe.setBounds(21, 113, 432, 15);
 		
 		jf.getContentPane().add(lblWarningThe);
+		
+		inputPath = new JTextField();
+		inputPath.setEditable(false);
+		inputPath.setBounds(509, 83, 409, 45);
+		jf.getContentPane().add(inputPath);
+		inputPath.setColumns(10);
+		
+		outputPath = new JTextField();
+		outputPath.setEditable(false);
+		outputPath.setColumns(10);
+		outputPath.setBounds(509, 449, 409, 45);
+		jf.getContentPane().add(outputPath);
+		
+		JButton chooseInputButton = new JButton("Choose Input File");
+		chooseInputButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser filechoose = new JFileChooser();
+				int returnval=filechoose.showOpenDialog(null);//getContentPane());
+				if(returnval==JFileChooser.APPROVE_OPTION)
+				{
+					File pic = filechoose.getSelectedFile();
+					path=pic.getAbsolutePath();
+					inputPath.setText(path);
+				}
+			}
+		});
+		chooseInputButton.setBounds(776, 32, 142, 30);
+		jf.getContentPane().add(chooseInputButton);
+		
+		JButton btnChoosePath = new JButton("Choose Path");
+		btnChoosePath.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser filechoose = new JFileChooser();
+				filechoose.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int returnval=filechoose.showOpenDialog(null);//getContentPane());
+				if(returnval==JFileChooser.APPROVE_OPTION)
+				{
+					String filePath = filechoose.getSelectedFile().getAbsolutePath();
+					outputPath.setText(filePath);
+				}
+			}
+		});
+		btnChoosePath.setBounds(776, 401, 142, 30);
+		jf.getContentPane().add(btnChoosePath);
 		JMenuBar menuBar=new JMenuBar();
 		JMenu filemenu=new JMenu("File");
 		jf.setJMenuBar(menuBar);
@@ -133,7 +168,8 @@ public class FileChoose extends JFrame{
 			{
 				jiami first = new jiami();
 				first.setname(path,  "a.bmp");
-				str=readText.getText()+"$";
+				String data = "";
+				str= data + "$";
 				try {
 					first.write(str);
 					JOptionPane.showMessageDialog(getContentPane(), "Image steganography sucess, save target file in target_img folder");
@@ -185,4 +221,5 @@ public class FileChoose extends JFrame{
 			}
 			});
 		}
+
 }

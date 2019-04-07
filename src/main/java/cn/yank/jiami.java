@@ -8,17 +8,20 @@ public class jiami   {
 	File infilename,outfilename; //�������ܺͽ��ܵ�λ��//= new File("1.bmp");
 	FileInputStream in;
 	FileOutputStream out;
+
 	jiami()
 	{	
 		infilename=outfilename=null;
 		in=null;
 		out=null;
 	}
+
 	public void setname(String a,String b)//()//= new FileInputStream(filename);
 	{
 		infilename = new File(a);
 		outfilename=new File(b);
 	}
+
 	void write(String words) throws Throwable
 	{
 		File afile=new File("a.bmp");
@@ -69,4 +72,4 @@ public class jiami   {
 		intemp.close();
 		System.out.println("end");
 	}
-};
+}
