@@ -6,9 +6,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,7 +25,8 @@ import java.awt.Color;
 
 public class FileChoose extends JFrame{
 	private static final long serialVersionUID = -5957681917403551823L;
-	String path = "res/image/4_1.bmp";
+	String imageChoosePath = "res/image/4_1.bmp";
+	String imageOutputPath = null;
 	String str;
 			//C:\\Users\\john\\Desktop\\original_5MV1_7216000155f2118f.jpg";
 	JFrame jf=new JFrame("LSB Steganography");
@@ -71,15 +79,15 @@ public class FileChoose extends JFrame{
 		tailAppendButton.setBounds(501, 264,200,30);
 		dataCoverageButton.setBounds(501, 334,200,30);
 		headerRedundancyReaderButton.setBounds(736, 194, 200, 30);
-		choose.setBounds(180, 73,114,30);
-		pathtip.setBounds(106, 20, 262, 45);
+		choose.setBounds(170, 57,142,30);
+		pathtip.setBounds(112, 7, 262, 45);
 		showpic.setIcon(new ImageIcon("res/default.jpg"));
 		showpic.setHorizontalTextPosition(JLabel.CENTER);
 		showpic.setVerticalTextPosition(JLabel.BOTTOM);
 		readTipsText.setBounds(501, 397, 157,30);
 		
 		jf.getContentPane().add(showpic);
-		showpic.setBounds(37, 143, 400,400);
+		showpic.setBounds(43, 124, 400,430);
 		
 		JButton tailAppendReaderButton = new JButton("Tail Append Reader");
 		tailAppendReaderButton.setBounds(736, 264, 200, 30);
@@ -95,7 +103,7 @@ public class FileChoose extends JFrame{
 		jf.getContentPane().add(writeTipsText);
 		lblWarningThe.setForeground(Color.RED);
 		lblWarningThe.setHorizontalAlignment(SwingConstants.CENTER);
-		lblWarningThe.setBounds(21, 113, 432, 15);
+		lblWarningThe.setBounds(26, 98, 432, 15);
 		
 		jf.getContentPane().add(lblWarningThe);
 		
@@ -119,8 +127,7 @@ public class FileChoose extends JFrame{
 				if(returnval==JFileChooser.APPROVE_OPTION)
 				{
 					File pic = filechoose.getSelectedFile();
-					path=pic.getAbsolutePath();
-					inputPath.setText(path);
+					inputPath.setText(pic.getAbsolutePath());
 				}
 			}
 		});
@@ -166,60 +173,126 @@ public class FileChoose extends JFrame{
 		{
 			public void mouseClicked (MouseEvent arg0)//throws Throwable
 			{
-				jiami first = new jiami();
-				first.setname(path,  "a.bmp");
-				String data = "";
-				str= data + "$";
-				try {
-					first.write(str);
-					JOptionPane.showMessageDialog(getContentPane(), "Image steganography sucess, save target file in target_img folder");
-				} catch (Throwable e) {
-					JOptionPane.showMessageDialog(getContentPane(), "Failed to open file");
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
 			}
 		});
+		
 		choose.addMouseListener(new MouseAdapter()
 		{
 			public void mouseClicked (MouseEvent arg0)//throws Throwable
 			{
+				inputPath.setText(null);
+				outputPath.setText(null);
+				imageOutputPath = null;
 				JFileChooser filechoose = new JFileChooser();
 				int returnval=filechoose.showOpenDialog(null);//getContentPane());
 				if(returnval==JFileChooser.APPROVE_OPTION)
 				{
 					File pic = filechoose.getSelectedFile();
-					path=pic.getAbsolutePath();
+					imageChoosePath=pic.getAbsolutePath();
 					Image myimage =null;
 					try{
-						ImageIO.write(ImageUtils.resizeImage(path, ImageUtils.IMAGE_GIF, 400, 400), "BMP", new FileOutputStream("res/temp.bmp"));  
+						ImageIO.write(ImageUtils.resizeImage(imageChoosePath, ImageUtils.IMAGE_GIF, 400, 400), "BMP", new FileOutputStream("res/temp.bmp"));  
 						myimage=ImageIO.read(new File("res/temp.bmp"));
 					}catch(IOException ex){}
 					showpic.setIcon(new ImageIcon(myimage));
-					showpic.setText("Current File Path "+path);
+					showpic.setText("Current File Path "+imageChoosePath);
 			
 				}
 			}
 		});
+
+		dataCoverageButton.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (inputPath.getText().toString().trim().isEmpty()) {
+					JOptionPane.showMessageDialog(getContentPane(), "Please specify a input file! ");
+				}else{
+					jiami first = new jiami();
+					Date date = new Date() ;
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss") ;
+					String outputImagePath = "res/target/WriterOutput_"+ dateFormat.format(date)+ ".bmp";
+					imageOutputPath = outputImagePath;
+					first.setname(imageChoosePath, outputImagePath);
+					String data = "";
+					data = getFileContent(inputPath.getText());
+					str= data + "$";
+					System.out.println(str);
+					try {
+						first.write(str);
+						JOptionPane.showMessageDialog(getContentPane(), "Image steganography sucess, save target file in target_img folder");
+					} catch (Throwable e1) {
+						JOptionPane.showMessageDialog(getContentPane(), "Failed to open file");
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+
+		btnDataCoverageReader.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (outputPath.getText().toString().trim().isEmpty()) {
+					JOptionPane.showMessageDialog(getContentPane(), "Please specify a output location! ");
+				}else if(imageOutputPath == null){
+					JOptionPane.showMessageDialog(getContentPane(), "Please specify a preprocessed file! ");
+				}else{
+					String text;
+					jiemi second = new jiemi();
+					try {
+						text=second.gettext(imageOutputPath);
+						Date date = new Date() ;
+						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss") ;
+						String dataOuputPath = outputPath.getText() + "/"+ dateFormat.format(date) + ".txt";
+						writeFile(text.substring(0, text.length()-1), dataOuputPath);
+						JOptionPane.showMessageDialog(getContentPane(), "Successfully read data :" + text.substring(0, text.length()-1)+"! And Write it to"+dataOuputPath);
+					} catch (IOException e1) {
+						JOptionPane.showMessageDialog(getContentPane(), "An Error occurs when read data");
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+
 		headerRedundancyReaderButton.addMouseListener(new MouseAdapter()
 		{
 			public void mouseClicked (MouseEvent arg0)//throws Throwable
 			{
-				String text;
-				jiemi second = new jiemi();
-				try {
-					text=second.gettext(path);
-					JOptionPane.showMessageDialog(getContentPane(), "You Have write:"+text);
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(getContentPane(), "An Error occurs when read data");
-					// TODO Auto-generated catch block
-					
-					e.printStackTrace();
-				}
-				
 				
 			}
 			});
+
 		}
 
+		public String getFileContent(String path){
+			StringBuilder dataContent = new StringBuilder();
+			try {
+				BufferedReader in = new BufferedReader(new FileReader(path));
+				String str= "";
+				while ((str = in.readLine()) != null) {
+					dataContent.append(str);
+				}
+				in.close();
+			} catch (FileNotFoundException e) {
+				//TODO: handle exception
+			} catch (IOException e1){
+				System.err.println("An IO Error occurs");
+			}
+			return dataContent.toString();
+		}
+
+		public void writeFile(String data, String path){
+			try {
+				File writename = new File(path); // 相对路径，如果没有则要建立一个新的output。txt文件
+				writename.createNewFile(); // 创建新文件
+				BufferedWriter out = new BufferedWriter(new FileWriter(writename));
+				out.write(data); // \r\n即为换行
+				out.flush(); // 把缓存区内容压入文件
+				out.close(); // 最后记得关闭文件
+			} catch (FileNotFoundException e) {
+				//TODO: handle exception
+			} catch (IOException e1){}
+		}
 }

@@ -30,6 +30,7 @@ public String gettext(String a) throws IOException
 		tempchar=(char)key;
 		text=text+tempchar;
 	}while(key!='$');
+	in.close();
 	return text;
 	}
 

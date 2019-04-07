@@ -3,6 +3,8 @@ package cn.yank;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 public class jiami   {
 	
 	File infilename,outfilename; //�������ܺͽ��ܵ�λ��//= new File("1.bmp");
@@ -24,12 +26,6 @@ public class jiami   {
 
 	void write(String words) throws Throwable
 	{
-		File afile=new File("a.bmp");
-		if(afile.exists()==false)
-		{
-			afile.createNewFile();
-		}
-		FileInputStream intemp=new FileInputStream(afile);
 		char[] c = words.toCharArray();
 		int i,j,k=0;
 		int hehe;
@@ -54,7 +50,9 @@ public class jiami   {
 						hehe=(c[j]>>(7-i)&0x01);
 						temp=hehe+(temp&0xfe);
 						out.write(temp);
-						temp=temp-intemp.read();
+						// int a = intemp.read();
+						// System.out.print(a+" ");
+						// temp=temp-a;
 						temp=in.read();
 						k++;
 					}
@@ -64,12 +62,11 @@ public class jiami   {
 			{
 				out.write(temp);
 				k++;
-				temp=intemp.read();
+				// temp=intemp.read();
 				temp=in.read();
 			}
 			
 		};
-		intemp.close();
 		System.out.println("end");
 	}
 }
