@@ -2,16 +2,16 @@ package cn.yank;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-public class jiami   {
+
+public class Encryption   {
 	
 	File infilename,outfilename; //�������ܺͽ��ܵ�λ��//= new File("1.bmp");
 	FileInputStream in;
 	FileOutputStream out;
 
-	jiami()
+	Encryption()
 	{	
 		infilename=outfilename=null;
 		in=null;
@@ -69,4 +69,34 @@ public class jiami   {
 		};
 		System.out.println("end");
 	}
+
+	void write(File picture, File inputFile, File outputFile) throws FileNotFoundException{
+		
+		FileInputStream pictureInputStream = new FileInputStream(picture);
+		FileInputStream fileInputStream = new FileInputStream(inputFile);
+		FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+		int counter = 0;
+		try {
+			int temp = fileInputStream.read();
+			int input = pictureInputStream.read();
+			while(input!=-1){
+				if(counter>=6 && temp!=-1){
+					fileOutputStream.write(temp);
+					temp = fileInputStream.read();
+				}else{
+					fileOutputStream.write(input);
+					
+				}
+				input = pictureInputStream.read();
+				counter++;
+			}
+			pictureInputStream.close();
+			fileInputStream.close();
+			fileOutputStream.close();
+		} catch (Exception e) {
+			//TODO: handle exception
+		}
+		
+	}
+
 }
